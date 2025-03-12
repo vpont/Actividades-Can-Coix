@@ -17,7 +17,6 @@ export default function App() {
             day.pieces.filter(piece => piece.bookings && new Date(piece.end) > now).map(piece => ({
               name: facility.facility.name.trim(),
               date: piece.ini,
-              freeSeats: piece.capacity.total,
               freeSeats: piece.capacity.free,
               totalSeats: piece.bookings.total,
               bookings: piece.bookings.map(b => b.name),

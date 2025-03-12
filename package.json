@@ -1,8 +1,8 @@
 {
-  "name": "actividades",
+  "name": "actividades_can_coix",
   "version": "1.0.0",
   "main": "index.js",
-  "homepage": "https://vpont.github.io/Actividades-Can-Coix",
+  "homepage": "https://pont.cat/Actividades-Can-Coix/",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
