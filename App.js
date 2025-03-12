@@ -90,8 +90,8 @@ export default function App() {
             <Text style={styles.modalSubtitle}>Reservas:</Text>
             <FlatList
               data={selectedActivity?.bookings || []}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => <Text>{formatName(item)}</Text>}
+              keyExtractor={(index) => index.toString()}
+              renderItem={({ index, item }) => <Text>{(index+1).toString().padStart(2, '0')}. {formatName(item)}</Text>}
             />
             <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Cerrar</Text>
