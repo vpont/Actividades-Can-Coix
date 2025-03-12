@@ -40,7 +40,7 @@ export default function App() {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
-    }) + `, ${date.toLocaleTimeString('es-ES')}`;
+    }) + `, ${date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
   };
 
   const formatName = (name) => {
@@ -56,7 +56,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Actividades de la Semana</Text>
+      <Text style={styles.title}>Actividades de esta semana</Text>
       <FlatList
         data={activities}
         keyExtractor={(item, index) => index.toString()}
@@ -107,7 +107,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     padding: 20,
-    paddingTop: 50,
   },
   title: {
     fontSize: 20,
