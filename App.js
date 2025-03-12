@@ -7,7 +7,7 @@ export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
 
-  useEffect(() => {
+  const fetchActivities = () => {
     fetch('https://api.sporttia.com/v6/timetable?idFieldGroup=1742300&weekly=true')
       .then(response => response.json())
       .then(data => {
@@ -26,7 +26,13 @@ export default function App() {
         ).sort((a, b) => new Date(a.date) - new Date(b.date));
         setActivities(parsedActivities);
       })
-      .catch(error => console.error('Error fetching data:', error));
+      .catch(error => console.error('Error obteniendo los datos', error));
+  };
+
+  useEffect(() => {
+    fetchActivities();
+    const intervalId = setInterval(fetchActivities, 300000); // 300,000 milisegundos = 5 minutos
+    return () => clearInterval(intervalId);
   }, []);
 
   const formatDate = (dateString) => {
