@@ -16,13 +16,13 @@ export default function App() {
           facility.week.flatMap(day =>
             day.pieces.filter(piece => piece.bookings && new Date(piece.end) > now).map(piece => ({
               name: facility.facility.name.trim(),
-              date: piece.ini,
+              iniDate: piece.ini,
               freeSeats: piece.capacity.free,
               totalSeats: piece.bookings.total,
               bookings: piece.bookings.map(b => b.name),
             }))
           )
-        ).sort((a, b) => new Date(a.date) - new Date(b.date));
+        ).sort((a, b) => new Date(a.iniDate) - new Date(b.iniDate));
         setActivities(parsedActivities);
       })
       .catch(error => console.error('Error obteniendo los datos', error));
@@ -30,7 +30,7 @@ export default function App() {
 
   useEffect(() => {
     fetchActivities();
-    const intervalId = setInterval(fetchActivities, 300000); // 300,000 milisegundos = 5 minutos
+    const intervalId = setInterval(fetchActivities, 300000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -67,7 +67,7 @@ export default function App() {
           }}>
             <View style={styles.item}>
               <Text style={styles.activityName}>{item.name}</Text>
-              <Text>{formatDate(item.date)}</Text>
+              <Text>{formatDate(item.iniDate)}</Text>
               <Text>{item.freeSeats} plazas libres</Text>
             </View>
           </TouchableOpacity>
@@ -84,13 +84,16 @@ export default function App() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>{selectedActivity?.name}</Text>
-            <Text>{formatDate(selectedActivity?.date)}</Text>
+            <Text>{formatDate(selectedActivity?.iniDate)}</Text>
             <Text>{selectedActivity?.freeSeats} plazas libres</Text>
-            <Text style={styles.modalSubtitle}>Reservas:</Text>
+            <Text style={styles.modalSubtitle}>PARTICIPANTES</Text>
             <FlatList
               data={selectedActivity?.bookings || []}
               keyExtractor={(index) => index.toString()}
               renderItem={({ index, item }) => <Text>{(index+1).toString().padStart(2, '0')}. {formatName(item)}</Text>}
+              ListEmptyComponent={
+                <Text>No hay actividades</Text>
+              }
             />
             <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Cerrar</Text>
@@ -145,6 +148,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 10,
+    marginBottom: 10,
   },
   closeButton: {
     marginTop: 20,
