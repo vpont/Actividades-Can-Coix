@@ -6,6 +6,7 @@ export default function App() {
   const [activities, setActivities] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
+  const [toggledParticipants, setToggledParticipants] = useState([]);
 
   const fetchActivities = () => {
     fetch('https://api.sporttia.com/v6/timetable?idFieldGroup=1742300&weekly=true')
@@ -44,14 +45,16 @@ export default function App() {
   };
 
   const formatName = (name) => {
-    // Eliminar dígitos al principio del nombre
     const nameWithoutDigits = name.replace(/^\d+\s*|\s*\d+$/g, '').trim();
-    // Capitalizar el nombre
     return nameWithoutDigits
       .toLowerCase()
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  };
+
+  const toggleParticipant = (name) => {
+    setToggledParticipants(prev => prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]);
   };
 
   return (
@@ -63,6 +66,7 @@ export default function App() {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => {
             setSelectedActivity(item);
+            setToggledParticipants([]);
             setModalVisible(true);
           }}>
             <View style={styles.item}>
@@ -89,11 +93,15 @@ export default function App() {
             <Text style={styles.modalSubtitle}>PARTICIPANTES</Text>
             <FlatList
               data={selectedActivity?.bookings || []}
-              keyExtractor={(index) => index.toString()}
-              renderItem={({ index, item }) => <Text>{(index+1).toString().padStart(2, '0')}. {formatName(item)}</Text>}
-              ListEmptyComponent={
-                <Text>No hay actividades</Text>
-              }
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ index, item }) => (
+                <TouchableOpacity onPress={() => toggleParticipant(item)}>
+                  <Text style={toggledParticipants.includes(item) ? styles.toggledText : null}>
+                    {(index+1).toString().padStart(2, '0')}. {formatName(item)}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              ListEmptyComponent={<Text>No hay actividades</Text>}
             />
             <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Cerrar</Text>
@@ -149,6 +157,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 10,
+  },
+  toggledText: {
+    textDecorationLine: 'line-through',
+    color: 'gray',
   },
   closeButton: {
     marginTop: 20,
