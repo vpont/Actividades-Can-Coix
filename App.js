@@ -72,7 +72,7 @@ export default function App() {
             <View style={styles.item}>
               <Text style={styles.activityName}>{item.name}</Text>
               <Text>{formatDate(item.iniDate)}</Text>
-              <Text>{item.freeSeats} plazas libres</Text>
+              <Text>{item.freeSeats === 1 ? '1 plaza libre' : `${item.freeSeats} plazas libres`}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -89,7 +89,7 @@ export default function App() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>{selectedActivity?.name}</Text>
             <Text>{formatDate(selectedActivity?.iniDate)}</Text>
-            <Text>{selectedActivity?.freeSeats} plazas libres</Text>
+            <Text>{selectedActivity?.freeSeats === 1 ? '1 plaza libre' : `${selectedActivity?.freeSeats} plazas libres`}</Text>
             <Text style={styles.modalSubtitle}>PARTICIPANTES</Text>
             <FlatList
               data={selectedActivity?.bookings || []}
