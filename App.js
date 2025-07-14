@@ -14,7 +14,10 @@ export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [toggledParticipants, setToggledParticipants] = useState([]);
+  const [participants, setParticipants] = useState([]);
+  const [loadingParticipants, setLoadingParticipants] = useState(false);
 
+  // Función para obtener las actividades desde la API
   const fetchActivities = () => {
     fetch(
       "https://api.sporttia.com/v7/timetable?idFieldGroup=1742300&weekly=true",
@@ -34,8 +37,10 @@ export default function App() {
                   new Date(piece.end) > now,
               )
               .map((piece) => ({
+                id: col.facility.id,
                 name: col.facility.name.trim(),
                 iniDate: piece.ini,
+                endDate: piece.end,
                 freeSeats: piece.capacity.free,
                 totalSeats: piece.capacity.total,
               })),
@@ -51,6 +56,29 @@ export default function App() {
     const intervalId = setInterval(fetchActivities, 300000);
     return () => clearInterval(intervalId);
   }, []);
+
+  const fetchParticipants = async (activity) => {
+    if (!activity) return;
+    setLoadingParticipants(true);
+    setParticipants([]);
+    try {
+      const url = `https://api.sporttia.com/v7/timetables/occupations?dateIni=${activity.iniDate}&dateEnd=${activity.endDate}&fieldId=${activity.id}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      const names = (data.rows || []).map((row) => row.name);
+      setParticipants(names);
+    } catch (e) {
+      setParticipants([]);
+    }
+    setLoadingParticipants(false);
+  };
+
+  const handleSelectActivity = (item) => {
+    setSelectedActivity(item);
+    setToggledParticipants([]);
+    setModalVisible(true);
+    fetchParticipants(item);
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -84,18 +112,12 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Actividades de esta semana</Text>
+      <Text style={styles.title}>Próximas actividades</Text>
       <FlatList
         data={activities}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => {
-              setSelectedActivity(item);
-              setToggledParticipants([]);
-              setModalVisible(true);
-            }}
-          >
+          <TouchableOpacity onPress={() => handleSelectActivity(item)}>
             <View style={styles.item}>
               <Text style={styles.activityName}>{item.name}</Text>
               <Text>{formatDate(item.iniDate)}</Text>
@@ -127,7 +149,7 @@ export default function App() {
             </Text>
             <Text style={styles.modalSubtitle}>PARTICIPANTES</Text>
             <FlatList
-              data={selectedActivity?.bookings || []}
+              data={participants}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ index, item }) => (
                 <TouchableOpacity onPress={() => toggleParticipant(item)}>
@@ -143,7 +165,13 @@ export default function App() {
                   </Text>
                 </TouchableOpacity>
               )}
-              ListEmptyComponent={<Text>No hay participantes</Text>}
+              ListEmptyComponent={
+                loadingParticipants ? (
+                  <Text>Cargando participantes...</Text>
+                ) : (
+                  <Text>No hay participantes</Text>
+                )
+              }
             />
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
