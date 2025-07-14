@@ -25,15 +25,15 @@ export default function App() {
       .then((response) => response.json())
       .then((data) => {
         const now = new Date();
-        // Adaptación al nuevo formato JSON
         const columns = data.one?.columns || [];
         const parsedActivities = columns
           .flatMap((col) =>
             (col.pieces || [])
               .filter(
                 (piece) =>
-                  piece.mark === "FREE" &&
-                  piece.capacity &&
+                  (piece.mark === "FREE" ||
+                    piece.mark === "FULL" ||
+                    piece.mark === "NO_RR") &&
                   new Date(piece.end) > now,
               )
               .map((piece) => ({
