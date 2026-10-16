@@ -29,6 +29,28 @@ No se requiere instalación. Simplemente accede a la URL proporcionada desde el 
 ## Tecnologías utilizadas
 
 - JavaScript
+- [Expo](https://expo.dev) (React Native)
+- React Native Web, para la versión que se publica en el navegador
+
+## Desarrollo
+
+Requisitos: Node.js y npm.
+
+```bash
+npm install
+npm start          # servidor de desarrollo de Expo
+npm run web        # abrir en el navegador
+npm run android    # abrir en Android
+npm run ios        # abrir en iOS
+```
+
+## Despliegue
+
+La versión web se publica en GitHub Pages:
+
+```bash
+npm run deploy     # exporta la web a dist/ (predeploy) y la publica con gh-pages
+```
 
 ## Contribución
 
